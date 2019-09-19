@@ -3,8 +3,7 @@ Author: Chen Stanilovsky
 Course: CSCI-136
 Instructor: Professor Maryash
 Assignment: Project 2 Task A
-A program that reads a text file called dna.txt that contains one DNA strand per
-line, and outputs to the console (terminal) the corresponding mRNA strands.
+A program that
 */
 #include <iostream>
 #include <fstream>
