@@ -140,7 +140,9 @@ int pronunciationDifference(vector<string> pro_1, vector<string> pro_2){
   else if(pro_1.size() < pro_2.size()){
     for(int i = 0, j = 0; j < pro_2.size(); i++, j++){
       //each time a phoneme is not the same increment count
-      if(pro_1[i] != pro_2[j]){
+      if(i >= pro_1.size()){
+        count++;
+      }else if(pro_1[i] != pro_2[j]){
         count++;
         i--;
       }
@@ -149,7 +151,9 @@ int pronunciationDifference(vector<string> pro_1, vector<string> pro_2){
   }else if(pro_2.size() < pro_1.size()){
     for(int i = 0, j = 0; i < pro_1.size(); i++, j++){
       //each time a phoneme is not the same increment count
-      if(pro_1[i] != pro_2[j]){
+      if(j >= pro_2.size()){
+        count++;
+      }else if(pro_1[i] != pro_2[j]){
         count++;
         j--;
       }
@@ -200,7 +204,6 @@ string addPhoneme(string word, string pronunciation, ifstream& dict){
       if(given_split_pro.size() + 1 == read_split_pro.size()){
         if(pronunciationDifference(given_split_pro, read_split_pro) == 1){
           if(validWord(split_string[0])){
-            cout << "FOUND VALID WORD: " << split_string[0] << endl;
             out += split_string[0] + " ";
           }
         }
@@ -244,7 +247,7 @@ string removePhoneme(string word, string pronunciation, ifstream& dict){
 int main(int argc, char const *argv[]) {
   /*cout << (splitPronunciation("D IH0 F ER1").size() + 1 == splitPronunciation("D IH0 F ER1 D").size()) << endl;
   cout << validWord("DEFERRED") << endl;
-  cout << pronunciationDifference(splitPronunciation("D IH0 F ER1"), splitPronunciation("D IH0 F ER1 D"));*/
+  cout << pronunciationDifference(splitPronunciation("D IH0 F ER1"), splitPronunciation("D IH0 F D D D ER1"));*/
   string word;
   cout << "> ";
   cin >> word;
