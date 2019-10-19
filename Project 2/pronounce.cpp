@@ -50,7 +50,7 @@ vector<string> splitOnSpace(string s){
 }
 string getPronunciation(string s, ifstream& dict){
   //open file stream
-  dict.open("dict.txt");
+  dict.open("cmudict.0.7a");
   //If file is successfully opened
   if(dict.is_open()){
     //loop until end of file is reached
@@ -70,6 +70,7 @@ string getPronunciation(string s, ifstream& dict){
       }
     }
   }
+  cout << s << endl;
   //If end of file is reached and a matching string wasn't found, return not found
   return "Not found";
 }
@@ -95,7 +96,7 @@ bool validWord(string s){
 }
 string getIdentical(string word, string pronunciation, ifstream& dict){
   string out = "";
-  dict.open("dict.txt");
+  dict.open("cmudict.0.7a");
   if(dict.is_open()){
     while(!dict.eof()){
       string line;
@@ -165,7 +166,7 @@ string replacePhoneme(string word, string pronunciation, ifstream& dict){
   string output = "";
   //get the split pronunciation of the input word
   vector<string> given_split_pro = splitPronunciation(pronunciation);
-  dict.open("dict.txt");
+  dict.open("cmudict.0.7a");
   if(dict.is_open()){
     while(!dict.eof()){
       string line;
@@ -194,7 +195,7 @@ string replacePhoneme(string word, string pronunciation, ifstream& dict){
 string addPhoneme(string word, string pronunciation, ifstream& dict){
   string out = "";
   vector<string> given_split_pro = splitPronunciation(pronunciation);
-  dict.open("dict.txt");
+  dict.open("cmudict.0.7a");
   if(dict.is_open()){
     while(!dict.eof()){
       string line;
@@ -217,7 +218,7 @@ string removePhoneme(string word, string pronunciation, ifstream& dict){
   string output = "";
   //get the split pronunciation of the input word
   vector<string> given_split_pro = splitPronunciation(pronunciation);
-  dict.open("dict.txt");
+  dict.open("cmudict.0.7a");
   if(dict.is_open()){
     while(!dict.eof()){
       string line;
@@ -249,7 +250,6 @@ int main(int argc, char const *argv[]) {
   cout << validWord("DEFERRED") << endl;
   cout << pronunciationDifference(splitPronunciation("D IH0 F ER1"), splitPronunciation("D IH0 F D D D ER1"));*/
   string word;
-  cout << "> ";
   cin >> word;
   for(int i = 0; i < word.length(); i++){
     word[i] = toupper(word[i]);
@@ -264,9 +264,9 @@ int main(int argc, char const *argv[]) {
     if (!(pronunciation == "Not found")) {
       cout << endl << "Pronunciation    : " + pronunciation << endl << endl;
       cout << "Identical        : " + identical << endl;
-      cout << "Replace phoneme  : " + replace << endl;
       cout << "Add phoneme      : " + add << endl;
       cout << "Remove phoneme   : " + remove << endl;
+      cout << "Replace phoneme  : " + replace << endl;
     }else{
       cout << endl << pronunciation << endl;
     }
