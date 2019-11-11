@@ -21,11 +21,64 @@ int ROWS;  // global variables
 int COLS;
 int NUM;
 
-bool moveUp;
-bool moveLeft;
-vector<vector<int> > checkedPos;
+/*
+FUNCTIONALITY TO ADD
+BASED ON THE LOCATION OF THE DWARF, IF THE DWARF IS TO THE UP AND RIGHT OF A TREE
+CHECK THE UP AND RIGHT OF THE RIGHT FOR EMPTY SPACE FIRST, SAME FOR IF DWARF IS
+DOWN LEFT OF A TREE, CHECK THE DOWN AND LEFT OF THE TREE FOR EMPTY SPACES FIRST
+(optimize distance traveled)
+*/
+/*
+Given the coordinate of a location on the map, it finds an empty space either
+up down left or right from the given location. This is used to find empty spaces
+around trees so the dwarf can move there and chop it
+*/
+vector<int> findEmpty(Dwarf &dwarf, int r, int c){
+  vector<int> out;
+  if(dwarf.look(r + 1, c) == EMPTY){
+    out.push_back(r + 1);
+    out.push_back(c);
+  }else if(dwarf.look(r - 1, c) == EMPTY){
+    out.push_back(r - 1);
+    out.push_back(c);
+  }else if(dwarf.look(r, c - 1) == EMPTY){
+    out.push_back(r);
+    out.push_back(c - 1);
+  }else if(dwarf.look(r, c + 1) == EMPTY){
+    out.push_back(r);
+    out.push_back(c + 1);
+  }else{
+    out.push_back(-1);
+  }
+  return out;
+}
+/*
+This function loops through a border around the dwarf, starting at the 3x3 border
+that direfctly surrounds the dwarf, then the 5x5 border that surrounds the 3x3
+border etc... When it find a tree in the border, it check for an empty space at
+locations were the tree could be chopped. If the location is found the function
+returns a vector with the location of the empty space where the tree can be chopped
+*/
+vector<int> coordToMove(Dwarf &dwarf, int r, int c){
+  vector<int> out;
+  int offset = 1;
+  while(true){
+    for(int i = r - offset; i <= r + offset; i++){
+      for(int j = c - offset; j <= c + offset; j++){
+        if(dwarf.look(i, j) == PINE_TREE || dwarf.look(i, j) == APPLE_TREE){
+          out = findEmpty(dwarf, i,j);
+          if(out[0] == -1){
+            continue;
+          }else{
+            return out;
+          }
+        }
+      }
+    }
+    offset++;
+  }
+}
 
-enum Movement{UP, DOWN, LEFT, RIGHT, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT, NONE};
 /* onStart:
 An Initialization procedure called at the start of the game.
 You can use it to initialize certain global variables, or do
@@ -35,60 +88,13 @@ Parameters:
     cols: number of columns
     num:  number of dwarfs
     log:  a cout-like log */
-Movement directionToMove(Dwarf &dwarf, int r, int c, int offset){
-  //check up
-  if (dwarf.look(r+(offset*-1), c) == PINE_TREE || dwarf.look(r+(offset*-1), c) == APPLE_TREE) {
-    return Movement::UP;
-  }
-  //Check down
-  else if (dwarf.look(r+offset, c) == PINE_TREE || dwarf.look(r+offset, c) == APPLE_TREE) {
-    return Movement::DOWN;
-  }
-  //check left
-  else if (dwarf.look(r, c+(offset*-1)) == PINE_TREE || dwarf.look(r, c+(offset*-1)) == APPLE_TREE) {
-    return Movement::LEFT;
-  }
-  //check right
-  else if (dwarf.look(r, c+offset) == PINE_TREE || dwarf.look(r, c+offset) == APPLE_TREE) {
-    return Movement::RIGHT;
-  }
-  //check up-left diagonal
-  else if (dwarf.look(r+(offset*-1), c+(offset*-1)) == PINE_TREE || dwarf.look(r+(offset*-1), c+(offset*-1)) == APPLE_TREE) {
-    return Movement::UPLEFT;
-  }
-  //check up-right diagonal
-  else if (dwarf.look(r+(offset*-1), c+(offset)) == PINE_TREE || dwarf.look(r+(offset*-1), c+(offset)) == APPLE_TREE) {
-    return Movement::UPRIGHT;
-  }
-  //check down-left diagonal
-  else if (dwarf.look(r+(offset), c+(offset*-1)) == PINE_TREE || dwarf.look(r+(offset), c+(offset*-1)) == APPLE_TREE) {
-    return Movement::DOWNLEFT;
-  }
-  //check down-right diagonal
-  else if (dwarf.look(r+offset, c+offset) == PINE_TREE || dwarf.look(r+offset, c+offset) == APPLE_TREE) {
-    return Movement::DOWNRIGHT;
-  }else{
-    return Movement::NONE;
-  }
-
-}
-
 void onStart(int rows, int cols, int num, std::ostream &log) {
   log << "Start!" << endl; // Print a greeting message
-  moveUp = true;
-  moveLeft = false;
   ROWS = rows; // Save values in global variables
   COLS = cols;
   NUM = num;
 }
 
-bool hasBeenChecked(vector<int> pos){
-  for(int i = 0; i < checkedPos.size(); i++){
-    for(int j = 0; j < checkedPos[i].size(); j++){
-
-    }
-  }
-}
 
 /* onAction:
 A procedure called each time an idle dwarf is choosing
@@ -99,111 +105,39 @@ Parameters:
     hours:   number of hours in 24-hour format (0-23)
     minutes: number of minutes (0-59)
     log:     a cout-like log  */
-
+/*
+This method first checks if there is a tree in a location where the dwarf could
+chop it without having to move. If there is no such tree the method looks for a
+location where to dwarf could stand with a chopable tree either up down left or
+right
+*/
 void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
   // Get current position of the dwarf
   int r = dwarf.row();
   int c = dwarf.col();
   // Look if there is a tree on the right from the dwarf
   if (dwarf.look(r, c+1) == PINE_TREE || dwarf.look(r, c+1) == APPLE_TREE) {
-    // If there is a pine tree, chop it
     log << "Found a tree -- chop" << endl;
     dwarf.start_chop(EAST);
     return;
   }else if (dwarf.look(r, c-1) == PINE_TREE || dwarf.look(r, c-1) == APPLE_TREE) {
-    // If there is a pine tree, chop it
     log << "Found a tree -- chop" << endl;
     dwarf.start_chop(WEST);
     return;
   }else if (dwarf.look(r+1, c) == PINE_TREE || dwarf.look(r+1, c) == APPLE_TREE) {
-    // If there is a pine tree, chop it
     log << "Found a tree -- chop" << endl;
     dwarf.start_chop(SOUTH);
     return;
   }else if (dwarf.look(r-1, c) == PINE_TREE || dwarf.look(r-1, c) == APPLE_TREE) {
-    // If there is a pine tree, chop it
     log << "Found a tree -- chop" << endl;
     dwarf.start_chop(NORTH);
     return;
   }
   else {
-    /*
-    FUNCTIONALITY TO ADD
-    loop through closest positions near the dwarfs, r+1 c, then r-1 c, then r c+1
-    etc..., you can use and offset for checking (r or c + offset), multiply offset
-    by -1 each time to check +1 and -1
-    */
-
-    int offset = 1;
-    while(true){
-      Movement direction = directionToMove(dwarf, r, c, offset);
-      if (direction == Movement::UP) {
-        dwarf.start_walk(r + (offset*-1) + 1, c);
-        log << "Walk to " << r + (offset*-1) + 1<< " " << c << endl;
-        return;
-      }else if (direction == Movement::DOWN) {
-        dwarf.start_walk(r + offset - 1, c);
-        log << "Walk to " << r + offset - 1<< " " << c << endl;
-        return;
-      }else if (direction == Movement::LEFT) {
-        dwarf.start_walk(r, c+(offset*-1) + 1);
-        log << "Walk to " << r << " " << c+(offset*-1) + 1 << endl;
-        return;
-      }else if (direction == Movement::RIGHT) {
-        dwarf.start_walk(r, c + offset - 1);
-        log << "Walk to " << r << " " << c + offset - 1<< endl;
-        return;
-      }else if (direction == Movement::UPLEFT) {
-        dwarf.start_walk(r + (offset*-1) + 1, c + (offset*-1));
-        log << "Walk to " << r + (offset*-1) + 1 << " " << c + (offset*-1) << endl;
-        return;
-      }else if (direction == Movement::UPRIGHT) {
-        dwarf.start_walk(r +(offset*-1) + 1, c + offset);
-        log << "Walk to " << r  +(offset*-1) + 1 << " " << c+ offset << endl;
-        return;
-      }else if (direction == Movement::DOWNLEFT) {
-        dwarf.start_walk(r + offset - 1, c + (offset*-1));
-        log << "Walk to " << r  + offset - 1<< " " << c + (offset*-1) << endl;
-        return;
-      }else if (direction == Movement::DOWNRIGHT) {
-        dwarf.start_walk(r + offset - 1, c+offset);
-        log << "Walk to " << r+ offset - 1 << " " << c+offset << endl;
-        return;
-      }
-      offset++;
-    }
-    /*if(r == 0){
-      moveUp = false;
-      log << "TOUCHED EDGE" << endl;
-
-    }else if(r >= ROWS - 1){
-      moveUp = true;
-      log << "TOUCHED EDGE" << endl;
-
-    }
-    if(c == 0){
-      moveLeft = false;
-      log << "TOUCHED EDGE" << endl;
-    }else if (c >= COLS - 1) {
-      log << "TOUCHED EDGE" << endl;
-      moveLeft = true;
-    }
-
-    int vertOrHori = rand() % 2;
-    if(vertOrHori){
-      if(moveUp){
-        r = r - 1;
-      }else{
-        r = r + 1;
-      }
-    }else{
-      if(moveLeft){
-        c = c - 1;
-      }else{
-        c = c + 1;
-      }
-    }*/
-    log << "MOVING LEFT?: " << moveLeft << endl << "MOVING UP?: " << moveUp << endl;
+    vector<int> coords = coordToMove(dwarf, r, c);
+    r = coords[0];
+    c = coords[1];
+    log << "Walk to " << r << " " << c << endl;
     dwarf.start_walk(r, c);
     return;
   }
