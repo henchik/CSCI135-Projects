@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)https://maryash.github.io/135/projects/project_03.html -->
+<html lang="en-US" class="gr__maryash_github_io"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>maryash.github.io</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="maryash.github.io">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="https://maryash.github.io/135/projects/project_03.html">
+<meta property="og:url" content="https://maryash.github.io/135/projects/project_03.html">
+<meta property="og:site_name" content="maryash.github.io">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://maryash.github.io/135/projects/project_03.html","headline":"maryash.github.io","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./maryash.github.io_files/style.css">
+  </head>
+  <body data-gr-c-s-loaded="true">
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://maryash.github.io/">maryash.github.io</a></h1>
+      
+
+      
+<title>CSCI 135 - Project 3</title>
+
+<h1 id="project-3-space-debris-collection">Project 3. Space debris collection</h1>
+
+<p><img src="./maryash.github.io_files/n2Yp8aq.jpg" alt="" class="centered"></p>
+
+<p>In the year 2055, everyone on Earth learned about the <a href="https://en.wikipedia.org/wiki/Kessler_syndrome">Kessler syndrome</a>:</p>
+
+<blockquote>
+  <p>”[It] is a theory proposed by NASA scientist Donald J. Kessler in 1978, describing
+a self-sustaining cascading collision of space debris in low earth orbit. It’s the idea that two colliding objects in space 
+generate more debris that then collides with other objects, creating even more shrapnel and litter <em>until the entirety of low earth orbit
+is an impassable array of super swift stuff.</em></p>
+
+  <p><em>At that point, any entering satellite would face unprecedented risks of headfirst bombardment.</em>”
+Documentary videos about it: <a href="https://www.youtube.com/watch?v=HVov8o9x0yI">[1]</a>, <a href="https://www.youtube.com/watch?v=xgGm5odlIh4">[2]</a>.</p>
+</blockquote>
+
+<p>In June, 19 of 2055, a large defunct satellite <em>Envisat</em> collided with an unidentified debris object.
+One accident started an avalanche of space debris collisions. 
+Within a week, all low orbit satellites were hit, joining the list of 
+other space junk orbiting the planet.</p>
+
+<p>Governments had to respond, redirecting their military budgets to deal with the issue.
+So here you are, the best programmer in your class, freshly hired for programming debris collecting robots. 
+Tomorrow is your first work day, get ready!</p>
+
+<p><img src="./maryash.github.io_files/9ujhc5Q.jpg" alt="" class="centered"></p>
+
+<h2 id="day-1-robot-hardware">Day 1. Robot hardware<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#day-1-robot-hardware" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p><img src="./maryash.github.io_files/neE1lka.png" alt="" class="centered"></p>
+
+<p>Here’s a picture from the Mission Control Center. Robots are shown as green labels <code class="language-plaintext highlighter-rouge">0</code>, <code class="language-plaintext highlighter-rouge">1</code>, <code class="language-plaintext highlighter-rouge">2</code>, … , and the debris fields are blue squares.
+Each robot is equipped to perform the following actions:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">Action</span> <span class="p">{</span>
+    <span class="n">COLLECT</span><span class="p">,</span>                  <span class="c1">// collect debris </span>
+    <span class="n">UP</span><span class="p">,</span> <span class="n">DOWN</span><span class="p">,</span> <span class="n">LEFT</span><span class="p">,</span> <span class="n">RIGHT</span><span class="p">,</span>    <span class="c1">// move in four directions</span>
+
+    <span class="n">REPAIR_UP</span><span class="p">,</span> <span class="n">REPAIR_DOWN</span><span class="p">,</span>   <span class="c1">// repair neighboring robots</span>
+    <span class="n">REPAIR_LEFT</span><span class="p">,</span> <span class="n">REPAIR_RIGHT</span> 
+<span class="p">};</span>
+</code></pre></div></div>
+<p>Furthermore, each robot is identified by its <code class="language-plaintext highlighter-rouge">id</code>. The system is also tracking the location of every robot,
+which has two coordinates: row <code class="language-plaintext highlighter-rouge">loc.r</code> and column <code class="language-plaintext highlighter-rouge">loc.c</code>.</p>
+
+<p>The maximum number of robots that can be programmed from the control center is 50, 
+and their <code class="language-plaintext highlighter-rouge">id</code> numbers are always in the range from 0 to 49.</p>
+
+<p>When operating in empty space with no debris, all robot operations take <code class="language-plaintext highlighter-rouge">8</code> units of time to complete.
+While, according to the safety standards, when working at a debris site,
+the same operations are carried with higher accuracy and take <code class="language-plaintext highlighter-rouge">80</code> units of time, which is 10x of the normal operation time.</p>
+
+<h2 id="day-2-building-and-running-mission-control-software">Day 2. Building and running mission control software<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#day-2-building-and-running-mission-control-software" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>To run Mission Control software on your computer, copy the supplied file <code class="language-plaintext highlighter-rouge">mcc.zip</code> and extract it:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>unzip mcc.zip
+</code></pre></div></div>
+<p>you will get a new directory <code class="language-plaintext highlighter-rouge">mcc</code>. To compile the program, go to that directory, and while inside of it, type:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make
+</code></pre></div></div>
+<p>Building this software requires development files for “ncurses” library. <em>They are already installed on the Linux Lab computers</em>.
+To setup your own computer: On Ubuntu, this is package <code class="language-plaintext highlighter-rouge">libncurses5-dev</code>.
+On Cygwin, this is <code class="language-plaintext highlighter-rouge">libncurses-devel</code>. On Mac OS, this is <code class="language-plaintext highlighter-rouge">ncurses</code> package (<code class="language-plaintext highlighter-rouge">brew install ncurses</code>).</p>
+
+<p>After building the software, you get an executable file <code class="language-plaintext highlighter-rouge">mission</code>. To run it with the default parameters, type:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./mission
+</code></pre></div></div>
+<p>There are three sections in the program window: the map, the information panel, and the game log. <br>
+By pressing the keys <code class="language-plaintext highlighter-rouge">[Q]</code>, <code class="language-plaintext highlighter-rouge">[P]</code>, <code class="language-plaintext highlighter-rouge">[S]</code>, and <code class="language-plaintext highlighter-rouge">[F]</code> on the keyboard, you can <strong>quit</strong>, <strong>play</strong>, <strong>pause</strong>, <strong>step</strong>, 
+or <strong>fast-forward</strong>. See the recording below:</p>
+<div align="center">
+<script src="./maryash.github.io_files/lQG03ix32oJ1Z0pcyPQ0vqGgy.js" id="asciicast-lQG03ix32oJ1Z0pcyPQ0vqGgy" data-theme="tango" data-cols="74" data-rows="37" data-loop="1" async="" data-player="[object HTMLDivElement]"></script><div id="asciicast-container-lQG03ix32oJ1Z0pcyPQ0vqGgy" class="asciicast" style="display: block; float: none; overflow: hidden; padding: 0px; margin: 20px 0px;"><iframe src="./maryash.github.io_files/embed.html" id="asciicast-iframe-lQG03ix32oJ1Z0pcyPQ0vqGgy" name="asciicast-iframe-lQG03ix32oJ1Z0pcyPQ0vqGgy" scrolling="no" allowfullscreen="true" style="overflow: hidden; margin: 0px; border: 0px; display: inline-block; width: 100%; float: none; visibility: visible;"></iframe></div>
+</div>
+
+<p>The program can be also run with advanced options varying the map size, the number of robots,
+the amount of debris, the probability of robots crashing, and the random seed:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./mission 25 30 10  0.5  0.0001  12345 
+</code></pre></div></div>
+<ul>
+  <li>25 rows</li>
+  <li>30 columns</li>
+  <li>10 robots</li>
+  <li>0.5 debris density</li>
+  <li>0.0001 probability of robot malfunction (when they become red and things stop working)</li>
+  <li>12345 random seed (determines the initial map layout)</li>
+</ul>
+
+<p>You can run the program with fewer options too, then the unspecified parameters assume their default values
+and are slightly randomized. For example, if you run it as</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./mission 25 30 10  0.5  
+</code></pre></div></div>
+<p>then the malfunction probability is set to default 0.0002, and the random seed is chosen at random.</p>
+
+<h2 id="day-3-can-we-program-the-robots-already">Day 3. Can we program the robots already?<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#day-3-can-we-program-the-robots-already" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Your task is to <strong>program the robots’ logic so they do their work more efficiently</strong>. 
+There is no hard cap on what you can do, the task is relatively <strong>open-ended</strong>.
+You can start with simple improvements, and progress towards more complex ones:</p>
+
+<ol>
+  <li>Start by tinkering with the provided functions, to see what can be done, and how the robot’s behavior changes
+in response to your code modifications. (The program must be recompiled each time with <code class="language-plaintext highlighter-rouge">make</code> for changes to take an effect.)</li>
+  <li>As you can see, robots’ movement is pretty chaotic now. Make them move more direct towards debris.</li>
+  <li>Improve their logic so they are not waiting for other robots and distribute work efficiently.</li>
+  <li>Make sure the robots work well for all possible map sizes, robot numbers, and debris density.</li>
+  <li>Identify how to make them work quicker, and implement that.</li>
+  <li>Further improvements include handling the problem of robots malfunctioning, when they occasionally break,
+and are shown red on the screen. It will be described later.</li>
+</ol>
+
+<p>All robot logic is implemented in the file <code class="language-plaintext highlighter-rouge">bot.cpp</code>.
+This is the only file you are going to submit. Don’t edit the other files.</p>
+
+<p>Now, please open <code class="language-plaintext highlighter-rouge">bot.cpp</code> and inspect its code:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include "bot.h"
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">MAX_ROBOT_NUM</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">NUM</span><span class="p">;</span>          <span class="c1">// to remember number or robots</span>
+<span class="kt">int</span> <span class="n">ROWS</span><span class="p">,</span> <span class="n">COLS</span><span class="p">;</span>   <span class="c1">// map dimensions</span>
+
+<span class="cm">/* Initialization procedure, called when the game starts: */</span>
+<span class="kt">void</span> <span class="nf">onStart</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">cols</span><span class="p">,</span> <span class="kt">double</span> <span class="n">mpr</span><span class="p">,</span> 
+             <span class="n">Area</span> <span class="o">&amp;</span><span class="n">area</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="n">NUM</span> <span class="o">=</span> <span class="n">num</span><span class="p">;</span>   <span class="c1">// save the number of robots and the map size</span>
+    <span class="n">ROWS</span> <span class="o">=</span> <span class="n">rows</span><span class="p">;</span>
+    <span class="n">COLS</span> <span class="o">=</span> <span class="n">cols</span><span class="p">;</span>
+
+    <span class="n">log</span> <span class="o">&lt;&lt;</span> <span class="s">"Start!"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Deciding robot's next move */</span>
+<span class="n">Action</span> <span class="nf">onRobotAction</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="n">Loc</span> <span class="n">loc</span><span class="p">,</span> <span class="n">Area</span> <span class="o">&amp;</span><span class="n">area</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">loc</span><span class="p">.</span><span class="n">r</span><span class="p">;</span> <span class="c1">// current row and column</span>
+    <span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="n">loc</span><span class="p">.</span><span class="n">c</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">area</span><span class="p">.</span><span class="n">inspect</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="o">==</span> <span class="n">DEBRIS</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="n">COLLECT</span><span class="p">;</span>  
+    <span class="k">else</span> <span class="p">{</span> 
+        <span class="c1">// if not at a debris field, move randomly:</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">LEFT</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="n">RIGHT</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="k">return</span> <span class="n">UP</span><span class="p">;</span>
+            <span class="nl">default:</span> <span class="k">return</span> <span class="n">DOWN</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">onRobotMalfunction</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="n">Loc</span> <span class="n">loc</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="n">log</span> <span class="o">&lt;&lt;</span> <span class="s">"Robot "</span> <span class="o">&lt;&lt;</span> <span class="n">id</span> <span class="o">&lt;&lt;</span> <span class="s">" is damaged."</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">onClockTick</span><span class="p">(</span><span class="kt">int</span> <span class="n">time</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">log</span> <span class="o">&lt;&lt;</span> <span class="n">time</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The provided code is already implementing certain reasonable strategy.
+It is quite simplistic for now and you, surely, can improve it. Let us first brief you on the robot programming interface.</p>
+
+<p>There must be four functions defined in <code class="language-plaintext highlighter-rouge">bot.cpp</code>:</p>
+
+<h3 id="onstart">onStart<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#onstart" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">onStart</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">cols</span><span class="p">,</span> <span class="kt">double</span> <span class="n">mpr</span><span class="p">,</span> 
+             <span class="n">Area</span> <span class="o">&amp;</span><span class="n">area</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This is the initialization function that is run before the mission starts,
+it gets 6 parameters:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">num</code> is the total number robots under your control.</li>
+  <li><code class="language-plaintext highlighter-rouge">rows</code> and <code class="language-plaintext highlighter-rouge">cols</code>  are the number of rows and columns in the map.</li>
+  <li><code class="language-plaintext highlighter-rouge">mpr</code> is the probability of robot malfunction (usually, it is 0.0002).</li>
+  <li><code class="language-plaintext highlighter-rouge">area</code> is the information about the debris and robot locations, described in detail later.</li>
+  <li><code class="language-plaintext highlighter-rouge">log</code> is a cout-like output stream object for printing out text messages in the programmer’s log.<br>
+Please, <strong>don’t use <code class="language-plaintext highlighter-rouge">cout</code></strong> stream in this project. As a replacement, you are provided with <code class="language-plaintext highlighter-rouge">log</code> stream for printing.</li>
+</ul>
+
+<p>You are free to leave this function completely empty.
+However, if you would like to initialize global variables before the main robot execution starts,
+this function is a good place to do so.</p>
+
+<h3 id="onrobotaction">onRobotAction<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#onrobotaction" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Action</span> <span class="nf">onRobotAction</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="n">Loc</span> <span class="n">loc</span><span class="p">,</span> <span class="n">Area</span> <span class="o">&amp;</span><span class="n">area</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">);</span>
+</code></pre></div></div>
+<p><strong>This is the main robot logic function that is run for each robot, on each its turn.</strong></p>
+
+<p><strong>It must return a valid <code class="language-plaintext highlighter-rouge">Action</code></strong>, which tells the robot what it should perform on this one turn. 
+Here, simply speaking, we are expected to look at the surroundings of the robot and decide what should be its next move.</p>
+
+<p>Available actions to return:</p>
+<ul>
+  <li>moving: <code class="language-plaintext highlighter-rouge">UP</code>, <code class="language-plaintext highlighter-rouge">DOWN</code>, <code class="language-plaintext highlighter-rouge">LEFT</code>, <code class="language-plaintext highlighter-rouge">RIGHT</code>,</li>
+  <li>collecting debris: <code class="language-plaintext highlighter-rouge">COLLECT</code>,</li>
+  <li>repairing a robot in the neighboring square: <code class="language-plaintext highlighter-rouge">REPAIR_UP</code>, <code class="language-plaintext highlighter-rouge">REPAIR_DOWN</code>, <code class="language-plaintext highlighter-rouge">REPAIR_LEFT</code>, <code class="language-plaintext highlighter-rouge">REPAIR_RIGHT</code>.</li>
+</ul>
+
+<p>Parameters:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">id</code> is the current robot ID, it’s an integer from the range <code class="language-plaintext highlighter-rouge">0</code>, <code class="language-plaintext highlighter-rouge">1</code>, <code class="language-plaintext highlighter-rouge">2</code>, <code class="language-plaintext highlighter-rouge">3</code>, … , <code class="language-plaintext highlighter-rouge">num-1</code></li>
+  <li><code class="language-plaintext highlighter-rouge">loc</code> is the current robot location, which is a value of a structure type <code class="language-plaintext highlighter-rouge">Loc</code>, the individual row and column coordinates can be accessed as
+    <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loc</span><span class="p">.</span><span class="n">r</span> <span class="c1">// robot's row</span>
+<span class="n">loc</span><span class="p">.</span><span class="n">c</span> <span class="c1">// robot's column</span>
+</code></pre></div>    </div>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">area</code> provides the info about the surrounding debris and the coordinates of all other robots:
+    <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">area</span><span class="p">.</span><span class="n">inspect</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">)</span>   <span class="c1">// inspecting the location </span>
+<span class="c1">// at the coordinates (row,col). Returns EMPTY or DEBRIS</span>
+</code></pre></div>    </div>
+    <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">area</span><span class="p">.</span><span class="n">locate</span><span class="p">(</span><span class="n">ID</span><span class="p">).</span><span class="n">r</span>   <span class="c1">// row coordinate of the robot ID</span>
+<span class="n">area</span><span class="p">.</span><span class="n">locate</span><span class="p">(</span><span class="n">ID</span><span class="p">).</span><span class="n">c</span>   <span class="c1">// column coordinate of the robot ID</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>This function will be run on each robot’s turn, until there is no more space junk to collect.</p>
+
+<p>We can suggest you one simple but efficient robot logic to start with: <br>
+Start scanning the area around the robot using the function <code class="language-plaintext highlighter-rouge">area.inspect</code>.
+If you found a debris field nearby, make the robot walk towards it (return <code class="language-plaintext highlighter-rouge">LEFT</code>, <code class="language-plaintext highlighter-rouge">RIGHT</code>, <code class="language-plaintext highlighter-rouge">UP</code>, or <code class="language-plaintext highlighter-rouge">DOWN</code> in the direction of the debris).
+Otherwise, if the robot already stands in a debris field, collect it (return <code class="language-plaintext highlighter-rouge">COLLECT</code>).</p>
+
+<h3 id="onclocktick">onClockTick<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#onclocktick" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">onClockTick</span><span class="p">(</span><span class="kt">int</span> <span class="n">time</span><span class="p">,</span> <span class="n">ostream</span> <span class="o">&amp;</span><span class="n">log</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This is a simple function that is run on each tick of the clock, and its parameters are the current <code class="language-plaintext highlighter-rouge">time</code> and the output <code class="language-plaintext highlighter-rouge">log</code>.
+For example, you can use it to print current time in the log.</p>
+
+<h3 id="onrobotmalfunction">onRobotMalfunction<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#onrobotmalfunction" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>This function is not critical for the main functionality, and will be discussed later on the Day 4. 
+It is run every time a robot breaks, so you can program the other robots to repair it.</p>
+
+<h2 id="day-4-emergency-situations-and-repairing-robots">Day 4. Emergency situations and repairing robots<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#day-4-emergency-situations-and-repairing-robots" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>On rare occasions, a robot’s debris collecting mechanism can break due to collisions or manufacturing and software defects. 
+This usually happens during the action <code class="language-plaintext highlighter-rouge">COLLECT</code>.</p>
+
+<p><strong>A <em>malfunctioning robot</em> stops collecting the debris,
+and starts discarding space junk from their cargo bay.</strong>
+Such malfunctioning robots are labeled as red squares in the program.</p>
+
+<p>The proper course of action when a robot breaks is to send another robot to fix it. To help you identify such emergency situations,
+there is a function <code class="language-plaintext highlighter-rouge">onRobotMalfunction</code>, it is executed immediately after a robot breaks, so you can respond to it.</p>
+
+<p>When a mission starts, we are provided with a prediction of the malfunction probability, 
+it is passed as the argument <code class="language-plaintext highlighter-rouge">mpr</code> into function <code class="language-plaintext highlighter-rouge">onStart</code>. 
+In usual conditions this probability is small and approximately equal to 0.0002, however it can be as large as 0.5.
+An advanced robot logic program can execute different behavior if this probability is high or low, if you wish to fine-tine 
+your code in such a way, you can do so.</p>
+
+<h2 id="measuring-performance">Measuring performance.<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#measuring-performance" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Your program is expected to control robots in a wide range of environment conditions:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>5 ≤ <code class="language-plaintext highlighter-rouge">rows</code> ≤ 40</td>
+      <td>    number of rows</td>
+    </tr>
+    <tr>
+      <td>5 ≤ <code class="language-plaintext highlighter-rouge">cols</code> ≤ 40</td>
+      <td>    number of columns</td>
+    </tr>
+    <tr>
+      <td>1 ≤ <code class="language-plaintext highlighter-rouge">num</code> ≤ 50</td>
+      <td>    number of robots</td>
+    </tr>
+    <tr>
+      <td>0.0 ≤ <code class="language-plaintext highlighter-rouge">debris</code> ≤ 1.0</td>
+      <td>    debris density</td>
+    </tr>
+    <tr>
+      <td>0.0 ≤ <code class="language-plaintext highlighter-rouge">mpr</code> ≤ 0.5</td>
+      <td>    malfunction probability</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Reminding you that the program can be run with specific values of these variables as follows
+(in the command below, substitute variable names with actual numeric values!):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./mission rows cols num debris mpr
+</code></pre></div></div>
+<p>(When running the program with non-zero malfunction probability, 
+test your code with at least 2 robots, so one robot can repair the other when needed.)</p>
+
+<p>Robots’ performance is measured as their <strong>debris collection rate</strong>, the amount of debris collected per unit of time per robot.
+For convenience, we adjusted this value <strong>to the range from 0 to 1000</strong>. You will get maximum score if you get 1000 collection rate, and 
+the result above 1000 would be your extra bonus.</p>
+
+<p>To <strong>measure the debris collection rate</strong> of your robots, you are provided with a testing script <code class="language-plaintext highlighter-rouge">test.rb</code>. It is a Ruby script that can be run as follows:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./test.rb ./mission
+</code></pre></div></div>
+<p><strong>An example output with highlighted average debris collection rate is shown below.</strong>
+<em>Bear in mind that this is a randomized quick performance estimation test. The Gradescope testing script is
+slightly different, runs on a wider range of variable values, and is generally more accurate. 
+So your numbers may vary when using this script and Gradescope:</em></p>
+
+<p><img src="./maryash.github.io_files/oI5Z5JK.png" alt="" class="centered"></p>
+
+<p>One important advantage of using this script rather than Gradescope, is that it benchmarks how your robots work for different
+values of the variables <code class="language-plaintext highlighter-rouge">mpr</code>, <code class="language-plaintext highlighter-rouge">debris</code>, <code class="language-plaintext highlighter-rouge">num</code>, <code class="language-plaintext highlighter-rouge">rows</code>, <code class="language-plaintext highlighter-rouge">cols</code>. If you see that the robots underperform under certain conditions, 
+try to improve your code to work better for that range of conditions.</p>
+
+<p>The expected running time of the test is within 15 seconds. If your code runs much slower (longer than 45 seconds), 
+then it requires improvement.</p>
+
+<h2 id="competing-with-your-classmates--leaderboard">Competing with your classmates / Leaderboard<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#competing-with-your-classmates--leaderboard" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p><img src="./maryash.github.io_files/tmMF7rm.jpg" alt="" class="centered"></p>
+
+<p>This project is more open-ended than the previous ones. To encourage clever solutions and ingenuity on your part,
+in addition to the normal grade, we also run a tournament, ranking your programs’ performance. The authors of the best programs
+will receive <strong>additional prizes</strong> (in the form of extra grade bonus), as well as bragging rights, of course, if you will.</p>
+
+<p>The <strong>Leaderboard</strong> will be shown in your Gradescope submission, where you can see the relative performance of your code.</p>
+
+<p>To submit your code, you will be required to provide a <strong>pseudonym</strong> that will be shown instead of your real name. Please choose pseudonyms not revealing 
+your real name. If you want a suggestion on a fun nickname, see these generators, for example:</p>
+<ul>
+  <li><a href="http://www.fantasynamegenerators.com/computer-virus-names.php">Random computer virus name</a></li>
+  <li><a href="http://www.fantasynamegenerators.com/hacker-names.php">Random hacker name</a></li>
+  <li><a href="http://www.fantasynamegenerators.com/nicknames.php">Random nickname</a></li>
+</ul>
+
+<p>Late submissions are excluded from participating in the tournament, and also not receiving any bonus points above the points limit 
+(cannot get more than the maximum 85 pts in performance grade). Otherwise, the usual lateness policy applies.</p>
+
+<h2 id="how-to-submit-your-programs">How to submit your programs<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#how-to-submit-your-programs" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<h3 id="everything-should-be-submitted-through-gradescope">Everything should be submitted through Gradescope.<a class="anchorjs-link " href="https://maryash.github.io/135/projects/project_03.html#everything-should-be-submitted-through-gradescope" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>Upload only <code class="language-plaintext highlighter-rouge">bot.cpp</code>, no other files or executables. <br>
+You have to provide a pseudonym when submitting the file, which will be shown in the Leaderboard. The pseudonym should not reveal your real name,
+some suggestions for generating fun nicknames are listed above.</p>
+
+<p>Start the file with a comment that contains your name and a short program description, for example:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+Author: your name
+Course: CSCI-135
+Instructor: their name
+Assignment: title, e.g., Project 3
+
+Here, briefly, at least in one or a few sentences
+describe what the program does.
+*/</span>
+</code></pre></div></div>
+
+<p><img src="./maryash.github.io_files/i2iPYuU.jpg" alt="" class="centered"></p>
+
+<p><br></p>
+
+
+      
+    </div>
+    <script src="./maryash.github.io_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

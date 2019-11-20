@@ -35,21 +35,41 @@ around trees so the dwarf can move there and chop it
 */
 vector<int> findEmpty(Dwarf &dwarf, int r, int c){
   vector<int> out;
-  if(dwarf.look(r + 1, c) == EMPTY){
-    out.push_back(r + 1);
-    out.push_back(c);
-  }else if(dwarf.look(r - 1, c) == EMPTY){
-    out.push_back(r - 1);
-    out.push_back(c);
-  }else if(dwarf.look(r, c - 1) == EMPTY){
-    out.push_back(r);
-    out.push_back(c - 1);
-  }else if(dwarf.look(r, c + 1) == EMPTY){
-    out.push_back(r);
-    out.push_back(c + 1);
-  }else{
-    out.push_back(-1);
-  }
+  int d_row = dwarf.row();
+  int d_col = dwarf.col();
+  if(d_row > r){
+	  if(dwarf.look(r + 1, c) == EMPTY){
+		 out.push_back(r + 1);
+		 out.push_back(c);
+	  }else if(dwarf.look(r, c - 1) == EMPTY){
+		 out.push_back(r);
+		 out.push_back(c - 1);
+	  }else if(dwarf.look(r - 1, c) == EMPTY){
+		 out.push_back(r - 1);
+		 out.push_back(c);
+	  }else if(dwarf.look(r, c + 1) == EMPTY){
+		 out.push_back(r);
+		 out.push_back(c + 1);
+	  }else{
+		 out.push_back(-1);
+	  }
+	}else{
+		if(dwarf.look(r - 1, c) == EMPTY){
+			out.push_back(r + 1);
+			out.push_back(c);
+		}else if(dwarf.look(r, c - 1) == EMPTY){
+			out.push_back(r);
+			out.push_back(c - 1);
+		}else if(dwarf.look(r + 1, c) == EMPTY){
+			out.push_back(r - 1);
+			out.push_back(c);
+		}else if(dwarf.look(r, c + 1) == EMPTY){
+			out.push_back(r);
+			out.push_back(c + 1);
+		}else{
+			out.push_back(-1);
+		}
+	}
   return out;
 }
 /*
